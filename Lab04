@@ -1,0 +1,189 @@
+                                                                            // NOT DEALING WITH STATIC VARIABLES
+
+import java.io.*;
+import java.util.*;
+
+                                                                          // Employee Class Having Employee Details
+
+class Employee {
+    private int id;
+    private String name;
+    private String rank;
+
+    public Employee(int id, String name, String rank) {
+        this.id = id;
+        this.name = name;
+        this.rank = rank;
+    }
+
+    public int Get_id() {
+        return id;
+    }
+
+    public String Get_name() {
+        return name;
+    }
+
+    public String Get_rank() {
+        return rank;
+    }
+}
+
+                                                                  // Loading data into Array list (Collectino Objects)
+
+class Enter_Data {
+    ArrayList<Employee> employees;
+
+    public Enter_Data() {
+        employees = new ArrayList<>();
+    }
+
+    public void Loading_data() {
+        BufferedReader buff = null;
+        FileReader fill = null;
+
+        try {
+            fill = new FileReader("input.txt");
+            buff = new BufferedReader(fill);
+
+            String entry;
+
+            while ((entry = buff.readLine()) != null) {
+                String[] tokens = entry.split(",");
+
+                int ID = Integer.parseInt(tokens[0]);
+                String name = tokens[1];
+                String rank = tokens[2];
+
+                // Adding data to Array list
+
+                Employee emp = new Employee(ID, name, rank);
+                employees.add(emp);
+            }
+        } catch (IOException e) {
+            System.out.println("IOexception:" + e.getMessage());
+        }
+
+        finally {
+            try {
+                buff.close();
+                fill.close();
+            } catch (IOException e) {
+                System.out.println("IOexception in Finally!");
+            }
+        }
+    }
+
+                                                                          // Adding new Ojects in Array list
+  
+    public void Add_objects(int id, String name, String rank) {
+        Employee emp = new Employee(id, name, rank);
+        employees.add(emp);
+    }
+
+                                                                              // Writing data to new File
+
+    public void Writing_data() {
+        FileWriter fill = null;
+        BufferedWriter buff = null;
+        try {
+            fill = new FileWriter("Database.txt");
+            buff = new BufferedWriter(fill);
+            for (Employee emp : employees) {
+                String data = emp.Get_id() + "," + emp.Get_name() + "," + emp.Get_rank() + "\n";
+                buff.write(data);
+            }
+            System.out.println("DATA IS SUCCESSFULLY UPDATED");
+        } catch (IOException e) {
+            System.out.println("IOxception in Employee_data");
+        } finally {
+            try {
+                buff.close();
+                fill.close();
+            } catch (IOException e) {
+                System.out.println("IOexception in Finally!");
+            }
+        }
+
+    }
+
+                                                                     // Removal of data from Arraylist Based on ID
+
+    public boolean Remove_Record(int ID) {
+        for (Employee emp : employees) {
+            if (emp.Get_id() == ID) {
+                employees.remove(emp);
+                System.out.println("Employee Data is removed Successfully!");
+                return true;
+            }
+        }
+        System.out.println("Data not Found");
+        return false;
+    }
+
+}
+
+class Driver {
+    public static void main(String args[]) {
+        Enter_Data empData = new Enter_Data();
+
+        while (true) {
+
+            Main_menu();
+
+            int choice;
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Enter your choice:");
+            choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    empData.Loading_data();
+                    break;
+
+                case 2:
+                    int ID;
+                    String name;
+                    String rank;
+
+                    System.out.println("Enter the ID:");
+                    ID = scanner.nextInt();
+                    scanner.nextLine();
+                    System.out.println("Enter name:");
+                    name = scanner.nextLine();
+                    System.out.println("Enter rank");
+                    rank = scanner.nextLine();
+                    empData.Add_objects(ID, name, rank);
+                    break;
+
+                case 3:
+                    int id;
+                    System.out.println("Enter the ID of record");
+                    id = scanner.nextInt();
+                    empData.Remove_Record(id);
+                    break;
+
+                case 4:
+                    empData.Writing_data();
+                    break;
+
+                case 5:
+                    System.exit(0);
+
+                default:
+                    System.out.println("Error! You entered the wrong value ");
+            }
+
+        }
+    }
+
+    public static void Main_menu() {
+        System.out.println("Employee Management System");
+        System.out.println("---------------------------");
+        System.out.println("Enter 1 to load the record");
+        System.out.println("Enter 2 to Add new record");
+        System.out.println("Enter 3 to remove record");
+        System.out.println("Enter 4 to write records to DataBase");
+        System.out.println("Enter 5 to Exit the System");
+    }
+}
